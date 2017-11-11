@@ -6,7 +6,6 @@
  * This file is released under the GPLv2.
  */
 
-#include <linux/hw_power_monitor.h>
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
@@ -20,6 +19,7 @@
 #include <trace/events/power.h>
 #include <linux/pm_wakeup.h>
 #include <linux/moduleparam.h>
+#include <linux/hw_power_monitor.h>
 
 #include "power.h"
 
