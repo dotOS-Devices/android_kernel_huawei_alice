@@ -620,12 +620,9 @@ static void update_prevent_sleep_time(struct wakeup_source *ws, ktime_t now)
 {
 	ktime_t delta = ktime_sub(now, ws->start_prevent_time);
 	ws->prevent_sleep_time = ktime_add(ws->prevent_sleep_time, delta);
-   /* < DTS2014070101273 zhangran 20140701 begin */  
-    #if 1//def CONFIG_HUAWEI_KERNEL  
-       ws->screen_off_time = ktime_add(ws->screen_off_time, delta);  
-    #endif  
-    /*  DTS2014070101273 zhangran 20140701 end > */  
-
+#if 1//def CONFIG_HUAWEI_KERNEL  
+        ws->screen_off_time = ktime_add(ws->screen_off_time, delta);  
+#endif  
 }
 #else
 static inline void update_prevent_sleep_time(struct wakeup_source *ws,
@@ -1031,13 +1028,11 @@ void pm_wakep_autosleep_enabled(bool set)
 				else
 					update_prevent_sleep_time(ws, now);
 			}
-			 /*  DTS2014070101273  zhangran 20140701 begin */  
-                     #if 1//def CONFIG_HUAWEI_KERNEL  
-                     if (set) { // screen off  
-                         ws->screen_off_time = ktime_set(0, 0);  
-                     }  
-                     #endif  
-                     /* DTS2014070101273  zhangran 20140701 end > */  
+#if 1//def CONFIG_HUAWEI_KERNEL  
+                        if (set) { // screen off  
+                                ws->screen_off_time = ktime_set(0, 0);  
+                        }  
+#endif  
 		}
 		spin_unlock_irq(&ws->lock);
 	}
@@ -1061,23 +1056,18 @@ static int print_wakeup_source_stats(struct seq_file *m,
 	unsigned long active_count;
 	ktime_t active_time;
 	ktime_t prevent_sleep_time;
-	 /* < DTS2014070101273  zhangran 20140701 begin */  
-       #if 1//def CONFIG_HUAWEI_KERNEL  
-       ktime_t screen_off_time;  
-       #endif  
-        /* DTS2014070101273  zhangran 20140701 end > */  
+#if 1//def CONFIG_HUAWEI_KERNEL  
+        ktime_t screen_off_time;  
+#endif  
 
 	spin_lock_irqsave(&ws->lock, flags);
 
 	total_time = ws->total_time;
 	max_time = ws->max_time;
 	prevent_sleep_time = ws->prevent_sleep_time;
-	/* < DTS2014070101273  zhangran 20140701 begin */  
-       #if 1//def CONFIG_HUAWEI_KERNEL  
-       screen_off_time = ws->screen_off_time;  
-       #endif  
-       /* DTS2014070101273  zhangran 20140701 end > */  
-
+#if 1//def CONFIG_HUAWEI_KERNEL  
+        screen_off_time = ws->screen_off_time;  
+#endif  
 	active_count = ws->active_count;
 	if (ws->active) {
 		ktime_t now = ktime_get();
@@ -1086,25 +1076,22 @@ static int print_wakeup_source_stats(struct seq_file *m,
 		total_time = ktime_add(total_time, active_time);
 		if (active_time.tv64 > max_time.tv64)
 			max_time = active_time;
-             /* < DTS2014070101273  zhangran 20140701 begin */  
-            #if 1//def CONFIG_HUAWEI_KERNEL  
-            if (ws->autosleep_enabled) {  
-                    prevent_sleep_time = ktime_add(prevent_sleep_time,  
-                        ktime_sub(now, ws->start_prevent_time));  
-                    screen_off_time = ktime_add(screen_off_time,  
-                        ktime_sub(now, ws->start_prevent_time));  
-            }  
-            #else  
+#if 1//def CONFIG_HUAWEI_KERNEL  
+                if (ws->autosleep_enabled) {  
+                        prevent_sleep_time = ktime_add(prevent_sleep_time,  
+                            ktime_sub(now, ws->start_prevent_time));  
+                        screen_off_time = ktime_add(screen_off_time,  
+                            ktime_sub(now, ws->start_prevent_time));  
+                } 
+#else  
 		if (ws->autosleep_enabled)
 			prevent_sleep_time = ktime_add(prevent_sleep_time,
-				ktime_sub(now, ws->start_prevent_time));
-	      #endif  
-             /* DTS2014070101273  zhangran 20140701 end > */  
+			    ktime_sub(now, ws->start_prevent_time));
+#endif  
 	} else {
 		active_time = ktime_set(0, 0);
 	}
-      /* < DTS2014070101273  zhangran 20140701 begin */  
-      #if 1//def CONFIG_HUAWEI_KERNEL  
+#if 1//def CONFIG_HUAWEI_KERNEL  
        seq_printf(m, "%-12s\t%lu\t\t%lu\t\t%lu\t\t%lu\t\t"  
                     "%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\t\t%lld\n",  
                     ws->name, active_count, ws->event_count,  
@@ -1113,7 +1100,7 @@ static int print_wakeup_source_stats(struct seq_file *m,
                     ktime_to_ms(max_time), ktime_to_ms(ws->last_time),  
                     ktime_to_ms(prevent_sleep_time),  
                     ktime_to_ms(screen_off_time));  
-       #else  
+#else  
 	seq_printf(m, "%-32s\t%-8lu\t%-8lu\t%-8lu\t%-8lu\t"
 			"%-8lld\t%-8lld\t%-8lld\t%-8lld\t%-8lld\n",
 			ws->name, active_count, ws->event_count,
@@ -1121,13 +1108,12 @@ static int print_wakeup_source_stats(struct seq_file *m,
 			ktime_to_ms(active_time), ktime_to_ms(total_time),
 			ktime_to_ms(max_time), ktime_to_ms(ws->last_time),
 			ktime_to_ms(prevent_sleep_time));
-       #endif  
-       /* DTS2014070101273  zhangran 20140701 end > */ 
+#endif  
 	spin_unlock_irqrestore(&ws->lock, flags);
 
 	return 0;
 }
-             /* < DTS2016041200239   hWX281624 20160412 begin */  
+
 /**
  * print_wakeup_source_stats - Print wakeup source statistics information.
  * @m: seq_file to print the statistics into.
@@ -1180,7 +1166,7 @@ static int print_active_wakeup_source(struct seq_file *m,
 
 	return ret;
 }
-             /*  DTS2016041200239   hWX281624 20160412 end > */  
+
 /**
  * wakeup_sources_stats_show - Print wakeup sources statistics information.
  * @m: seq_file to print the statistics into.
@@ -1189,26 +1175,21 @@ static int wakeup_sources_stats_show(struct seq_file *m, void *unused)
 {
 	struct wakeup_source *ws;
 	
-       /* < DTS2014070101273  zhangran 20140701  begin */  
-	#if 1//def CONFIG_HUAWEI_KERNEL  
+#if 1//def CONFIG_HUAWEI_KERNEL  
        seq_puts(m, "name\t\tactive_count\tevent_count\twakeup_count\t"  
              "expire_count\tactive_since\ttotal_time\tmax_time\t"  
              "last_change\tprevent_suspend_time\tscreen_off_time\n");  
-       #else  
+#else  
 	seq_puts(m, "name\t\tactive_count\tevent_count\twakeup_count\t"
 		"expire_count\tactive_since\ttotal_time\tmax_time\t"
 		"last_change\tprevent_suspend_time\n");
 
-       #endif  
-       /* DTS2014070101273  zhangran 20140701 end > */  
-
+#endif  
 	rcu_read_lock();
 	list_for_each_entry_rcu(ws, &wakeup_sources, entry)
 		print_wakeup_source_stats(m, ws);
-             /* < DTS2016041200239   hWX281624 20160412 begin */  
 	list_for_each_entry_rcu(ws, &wakeup_sources, entry)
 		print_active_wakeup_source(m, ws);
-             /*   DTS2016041200239   hWX281624 20160412 end > */  
 	rcu_read_unlock();
 
 	print_wakeup_source_stats(m, &deleted_ws);
