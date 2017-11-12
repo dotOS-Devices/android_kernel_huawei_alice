@@ -23,29 +23,25 @@
 
 #include "power.h"
 
-static bool enable_qcom_rx_wakelock_ws = true;
-static bool enable_wlan_extscan_wl_ws = true;
-static bool enable_wlan_wow_wl_ws = true;
-static bool enable_ipa_ws = true;
-static bool enable_wlan_ws = true;
+static bool enable_mailbox_low_power_wake_lock_ws = true;
+static bool enable_Icc_ws = true;
+static bool enable_apds990x_ws = true;
+static bool enable_nfc_read_ws = true;
+static bool enable_ril_balong_ws = true;
+static bool enable_hi110x_wlan_wakelock_ws = true;
+static bool enable_rfs_ws = true;
 static bool enable_timerfd_ws = true;
 static bool enable_netlink_ws = true;
-static bool enable_netmgr_wl_ws = true;
-static bool enable_wlan_ipa_ws = true;
-static bool enable_wlan_pno_wl_ws = true;
-static bool enable_wcnss_filter_lock_ws = true;
 
-module_param(enable_qcom_rx_wakelock_ws, bool, 0644);
-module_param(enable_wlan_extscan_wl_ws, bool, 0644);
-module_param(enable_wlan_wow_wl_ws, bool, 0644);
-module_param(enable_ipa_ws, bool, 0644);
-module_param(enable_wlan_ws, bool, 0644);
+module_param(enable_mailbox_low_power_wake_lock_ws, bool, 0644);
+module_param(enable_Icc_ws, bool, 0644);
+module_param(enable_apds990x_ws, bool, 0644);
+module_param(enable_nfc_read_ws, bool, 0644);
+module_param(enable_ril_balong_ws, bool, 0644);
+module_param(enable_hi110x_wlan_wakelock_ws, bool, 0644);
+module_param(enable_rfs_ws, bool, 0644);
 module_param(enable_timerfd_ws, bool, 0644);
 module_param(enable_netlink_ws, bool, 0644);
-module_param(enable_netmgr_wl_ws, bool, 0644);
-module_param(enable_wlan_ipa_ws, bool, 0644);
-module_param(enable_wlan_pno_wl_ws, bool, 0644);
-module_param(enable_wcnss_filter_lock_ws, bool, 0644);
 
 /*
  * If set, the suspend/hibernate code will abort transitions to a sleep state
@@ -659,25 +655,22 @@ static bool wakeup_source_blocker(struct wakeup_source *ws)
         if (ws) {
                 wslen = strlen(ws->name);
 
-                if ((!enable_ipa_ws && !strncmp(ws->name, "IPA_WS", wslen)) ||
-                        (!enable_wlan_extscan_wl_ws &&
-                                !strncmp(ws->name, "wlan_extscan_wl", wslen)) ||
-                        (!enable_qcom_rx_wakelock_ws &&
-                                !strncmp(ws->name, "qcom_rx_wakelock", wslen)) ||
-                        (!enable_wlan_wow_wl_ws &&
-				!strncmp(ws->name, "wlan_wow_wl", wslen)) ||
-                        (!enable_wlan_ws &&
-                                !strncmp(ws->name, "wlan", wslen)) ||
+                if ((!enable_mailbox_low_power_wake_lock_ws &&
+                                !strncmp(ws->name, "mailbox_low_power_wake_lock", wslen)) ||
+                        (!enable_Icc_ws &&
+                                !strncmp(ws->name, "Icc", wslen)) ||
+                        (!enable_apds990x_ws &&
+                                !strncmp(ws->name, "apds990x", wslen)) ||
+                        (!enable_nfc_read_ws &&
+				!strncmp(ws->name, "nfc_read", wslen)) ||
+                        (!enable_ril_balong_ws &&
+                                !strncmp(ws->name, "RIL-BALONG-MODEM-POWER_WAKELOCK", wslen)) ||
                         (!enable_timerfd_ws &&
                                 !strncmp(ws->name, "[timerfd]", wslen)) ||
-                        (!enable_netmgr_wl_ws &&
-				!strncmp(ws->name, "netmgr_wl", wslen)) ||
-			(!enable_wlan_ipa_ws &&
-				!strncmp(ws->name, "wlan_ipa", wslen)) ||
-			(!enable_wlan_pno_wl_ws &&
-				!strncmp(ws->name, "wlan_pno_wl", wslen)) ||
-			(!enable_wcnss_filter_lock_ws &&
-				!strncmp(ws->name, "wcnss_filter_lock", wslen)) ||
+                        (!enable_hi110x_wlan_wakelock_ws &&
+				!strncmp(ws->name, "hi110x_wlan_wakelock", wslen)) ||
+			(!enable_rfs_ws &&
+				!strncmp(ws->name, "rfs", wslen)) ||
                         (!enable_netlink_ws &&
                                 !strncmp(ws->name, "NETLINK", wslen))) {
 
